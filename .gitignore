@@ -457,3 +457,5 @@ MigrationBackup/
 *.sln
 *.vcxproj
 *.vcxproj.filters
+!*.lib
+!*.dll
