@@ -1,16 +1,24 @@
-#include "BalanceBoard.hpp"
+﻿#include "BalanceBoard.hpp"
 
 #include <iostream>
 
 int main() {
-    wii::BasicDevice device;
+    wii::BalanceBoard board;
+    board.connect();
 
-    std::cout << "start connection\n";
+    board.on_led();
 
-    while (!device.connect());
-    std::cout << "connection success\n";
+    _sleep(1000);
 
-    device.update();
+    while (1) {
+         //_sleep(10);
+        system("cls");
+        board.update();
 
-    std::cout << "Hello World!\n";
+        if (board.front_button().is_down()) {
+            std::cout << "pressed\n";
+        }
+    }
+        
+    return 0;
 }
