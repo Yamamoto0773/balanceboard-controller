@@ -60,16 +60,32 @@ namespace wii {
 
     void BasicDevice::disconnect() {
         wiiuse_disconnect(*device_);
+        serial_number_.clear();
     }
 
+    const SerialNumber<char>& BasicDevice::serial_number() const noexcept {
+        return serial_number_;
+    }
 
     BalanceBoard::BalanceBoard() :
         BasicDevice() {}
 
     BalanceBoard::~BalanceBoard() {}
 
-    bool BalanceBoard::connect() {
-        wiiuse_find(device_.get(), 1, 0); // argument `timeout' is unused in library
+    bool BalanceBoard::connect(int index) {
+        wiiuse_find(device_.get(), 1, index, 0); // argument `timeout' is unused in library
+
+        wiimote_t* wm = *device_;
+        if (wm->exp.type != EXP_WII_BOARD) {
+            wiiuse_disconnect(*device_);
+        }
+
+        wchar_t wstr[128];
+        wiiuse_serial_number(*device_, wstr, sizeof(wstr));
+        char str[256];
+        wcstombs(str, wstr, 256);
+        serial_number_.parse(str);
+
         return wiiuse_connect(device_.get(), 1);
     }
 
@@ -83,6 +99,10 @@ namespace wii {
 
     void BalanceBoard::set_led(bool is_on) {
         is_on ? on_led() : off_led();
+    }
+
+    double BalanceBoard::battery_percentage() {
+        return (*device_)->battery_level;
     }
 
     void BalanceBoard::update() {

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *	wiiuse
  *
  *	Written By:
@@ -922,8 +922,10 @@ WIIUSE_EXPORT extern void wiiuse_set_timeout(struct wiimote_t **wm, int wiimotes
 WIIUSE_EXPORT extern void wiiuse_set_accel_threshold(struct wiimote_t *wm, int threshold);
 WIIUSE_EXPORT extern void wiiuse_wiiboard_use_alternate_report(struct wiimote_t *wm, int enabled);
 
+WIIUSE_EXPORT extern int wiiuse_serial_number(struct wiimote_t *wm, wchar_t *serial_number, unsigned long buffer_byte);
+
 /* io.c */
-WIIUSE_EXPORT extern int wiiuse_find(struct wiimote_t **wm, int max_wiimotes, int timeout);
+WIIUSE_EXPORT extern int wiiuse_find(struct wiimote_t **wm, int max_wiimotes, int index, int timeout);
 WIIUSE_EXPORT extern int wiiuse_connect(struct wiimote_t **wm, int wiimotes);
 WIIUSE_EXPORT extern void wiiuse_disconnect(struct wiimote_t *wm);
 

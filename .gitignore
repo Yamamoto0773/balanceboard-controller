@@ -1,4 +1,4 @@
-
+﻿
 # Created by https://www.gitignore.io/api/c++,macos,windows,visualstudio,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=c++,macos,windows,visualstudio,visualstudiocode
 
@@ -458,4 +458,3 @@ MigrationBackup/
 *.vcxproj
 *.vcxproj.filters
 !*.lib
-!*.dll
