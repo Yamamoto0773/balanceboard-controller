@@ -1,52 +1,42 @@
-﻿#include "BalanceBoard.hpp"
+﻿#include "BalanceBoardController.hpp"
 
 #include <iostream>
 #include <chrono>
 
 int main() {
-    wii::BalanceBoard board;
+    BalanceBoardController controller;
 
     std::cout << "connecting...\n";
-    
 
-    board.connect();
-    if (board.serial_number() == wii::SerialNumber<char>("001f322938df")) {
-        printf("OK\n");
-    } else {
-        return false;
+    while (!controller.is_connected()) {
+        controller.connect("001f322938df");
+        _sleep(100);
     }
-    
 
+    controller.set_threshold(0.5);
 
-    board.on_led();
-    printf("battery: %f\n", board.battery_percentage());
+    std::cout << "connected!\n";
+    std::cout << "battery:" << controller.battery_percentage() * 100 << "%\n";
 
     _sleep(1000);
 
     while (1) {
         _sleep(10);
-
         system("cls");
 
-        board.update();
 
-        if (board.is_connected())
-            std::cout << "connect\n";
+        std::cout << "lag:" << controller.time_from_last_update() << "\n";
 
-        if (board.front_button().is_pressed()) {
-            board.calibration();
-        }
+        controller.update();
 
         std::cout << std::fixed;
-        std::cout << "tl :" << board.top_left() << "\n";
-        std::cout << "tr :" << board.top_right() << "\n";
-        std::cout << "bl :" << board.bottom_left() << "\n";
-        std::cout << "br :" << board.bottom_right() << "\n";
-
+        std::cout << "tl :" << controller.top_left().down() << "\n";
+        std::cout << "tr :" << controller.top_right().down() << "\n";
+        std::cout << "bl :" << controller.bottom_left().down() << "\n";
+        std::cout << "br :" << controller.bottom_right().down() << "\n";
     }
 
-    board.off_led();
-    board.disconnect();
+    controller.disconnect();
         
     return 0;
 }

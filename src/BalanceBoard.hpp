@@ -12,23 +12,20 @@ namespace wii {
     class Button {
     public:
         enum State {
-            Pressed,    // 押された瞬間
-            Released,   // 離された瞬間
-            Down,       // 押されている状態
-            Up,         // 離されている状態
+            Down,       // 押された瞬間
+            Up,         // 離された瞬間
+            Pressed,    // 押されている状態
+            Released,   // 離されている状態
         };
 
         Button();
         ~Button();
 
-        bool is_down() const;
-        bool is_up() const;
-        bool is_pressed() const;
-        bool is_released() const;
+        bool pressed() const;
+        bool released() const;
+        bool down() const;
+        bool up() const;
 
-        const Button& self() const noexcept { return *this; };
-
-    protected:
         void press();
         void release();
         void update();
@@ -44,6 +41,9 @@ namespace wii {
         using string_type = std::basic_string<char_type>;
 
         SerialNumber() {}
+        SerialNumber(const char_type* serial_number_str) {
+            SerialNumber(string_type(serial_number_str));
+        }
         SerialNumber(string_type serial_number_str) {
             parse(serial_number_str);
         }
@@ -82,6 +82,11 @@ namespace wii {
         return true;
     }
 
+    template <typename char_type>
+    bool operator !=(const SerialNumber<char_type>& a, const SerialNumber<char_type>& b) {
+        return !(a == b);
+    }
+
 
     class BasicDevice {
     public:
@@ -108,7 +113,7 @@ namespace wii {
     };
 
 
-    class BalanceBoard : protected Button, public BasicDevice {
+    class BalanceBoard : public BasicDevice {
     public:
         BalanceBoard();
         ~BalanceBoard();
@@ -122,7 +127,7 @@ namespace wii {
         // between 0.0 and 1.0f
         float battery_percentage();
 
-        const Button& front_button() const noexcept { return Button::self(); }
+        const Button& front_button() const noexcept { return front_button_; }
 
         // get sensors value [kg]
         float top_left() const noexcept;

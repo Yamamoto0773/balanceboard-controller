@@ -11,38 +11,38 @@
 
 
 namespace wii {
-    Button::Button() : state_(State::Up) {}
+    Button::Button() : state_(State::Released) {}
     Button::~Button() {}
 
-    bool Button::is_down() const {
-        return state_ == State::Down || state_ == State::Pressed;
+    bool Button::pressed() const {
+        return state_ == State::Pressed || state_ == State::Down;
     }
 
-    bool Button::is_up() const {
-        return !is_down();
+    bool Button::released() const {
+        return !pressed();
     }
 
-    bool Button::is_pressed() const {
-        return state_ == State::Pressed;
+    bool Button::down() const {
+        return state_ == State::Down;
     }
 
-    bool Button::is_released() const {
-        return state_ == State::Released;
+    bool Button::up() const {
+        return state_ == State::Up;
     }
 
     void Button::press() {
-        state_ = State::Pressed;
+        state_ = State::Down;
     }
 
     void Button::release() {
-        state_ = State::Released;
+        state_ = State::Up;
     }
 
     void Button::update() {
-        if (state_ == State::Pressed)
-            state_ = State::Down;
-        else if (state_ == State::Released)
-            state_ = State::Up;
+        if (state_ == State::Down)
+            state_ = State::Pressed;
+        else if (state_ == State::Up)
+            state_ = State::Released;
     }
 
 
@@ -68,11 +68,14 @@ namespace wii {
     }
 
     BalanceBoard::BalanceBoard()
-        : calibration_tl_(0.0f), calibration_tr_(0.0f), calibration_bl_(0.0f), calibration_br_(0.0f), BasicDevice() {}
+        : calibration_tl_(0.0f), calibration_tr_(0.0f), calibration_bl_(0.0f), calibration_br_(0.0f), BasicDevice() {
+    }
 
     BalanceBoard::~BalanceBoard() {}
 
     bool BalanceBoard::connect(int index) {
+        wiiuse_set_output(wiiuse_loglevel::LOGLEVEL_DEBUG, NULL);
+
         wiiuse_find(device_.get(), 1, index, 0); // argument `timeout' is unused in library
 
         wiimote_t* wm = *device_;
@@ -135,16 +138,16 @@ namespace wii {
     }
 
     bool BalanceBoard::update() {
-        Button::update();
+        front_button_.update();
 
         if (!wiiuse_poll(device_.get(), 1))
             return false;
 
         wiimote_t* wm = *device_;
         if (IS_JUST_PRESSED(wm, WIIMOTE_BUTTON_A)) {
-            Button::press();
+            front_button_.press();
         } else if (IS_RELEASED(wm, WIIMOTE_BUTTON_A)) {
-            Button::release();
+            front_button_.release();
         }
 
         return true;
