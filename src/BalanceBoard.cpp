@@ -87,7 +87,8 @@ namespace wii {
         wchar_t wstr[128];
         wiiuse_serial_number(*device_, wstr, sizeof(wstr));
         char str[256];
-        wcstombs(str, wstr, 256);
+        size_t _;
+        wcstombs_s(&_, str, 256, wstr, 255);
         serial_number_.parse(str);
 
         return wiiuse_connect(device_.get(), 1);

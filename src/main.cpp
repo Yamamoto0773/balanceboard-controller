@@ -10,7 +10,7 @@ int main() {
 
     while (!controller.is_connected()) {
         controller.connect("001f322938df");
-        _sleep(100);
+        //_sleep(100);
     }
 
     controller.set_threshold(0.5);
@@ -18,22 +18,22 @@ int main() {
     std::cout << "connected!\n";
     std::cout << "battery:" << controller.battery_percentage() * 100 << "%\n";
 
-    _sleep(1000);
+    // _sleep(1000);
 
     while (1) {
-        _sleep(10);
-        system("cls");
+        //_sleep(10);
+        //system("cls");
 
 
-        std::cout << "lag:" << controller.time_from_last_update() << "\n";
+        //std::cout << "lag:" << controller.time_from_last_update() << "\n";
 
         controller.update();
 
         std::cout << std::fixed;
         std::cout << "tl :" << controller.top_left().down() << "\n";
-        std::cout << "tr :" << controller.top_right().down() << "\n";
-        std::cout << "bl :" << controller.bottom_left().down() << "\n";
-        std::cout << "br :" << controller.bottom_right().down() << "\n";
+        //std::cout << "tr :" << controller.top_right().down() << "\n";
+        //std::cout << "bl :" << controller.bottom_left().down() << "\n";
+        //std::cout << "br :" << controller.bottom_right().down() << "\n";
     }
 
     controller.disconnect();

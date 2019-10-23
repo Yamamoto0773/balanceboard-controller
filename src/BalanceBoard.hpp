@@ -41,9 +41,8 @@ namespace wii {
         using string_type = std::basic_string<char_type>;
 
         SerialNumber() {}
-        SerialNumber(const char_type* serial_number_str) {
-            SerialNumber(string_type(serial_number_str));
-        }
+        SerialNumber(const char_type* serial_number_str) :
+            SerialNumber(string_type(serial_number_str)) {}
         SerialNumber(string_type serial_number_str) {
             parse(serial_number_str);
         }
@@ -53,12 +52,8 @@ namespace wii {
         void parse(const string_type& serial_number_str) {
             for (size_t i = 0; i < 6; i++) {
                 auto str = serial_number_str.substr(i * 2, 2);
-                std::transform(
-                    str.begin(),
-                    str.end(),
-                    str.begin(),
-                    [](char_type ch) { return std::tolower(ch); }
-                );
+                for (auto& ch : str) ch = std::tolower(ch);
+
                 sn_[5 - i] = str;
             }
         }
