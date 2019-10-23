@@ -67,8 +67,8 @@ namespace wii {
         return serial_number_;
     }
 
-    BalanceBoard::BalanceBoard() :
-        BasicDevice() {}
+    BalanceBoard::BalanceBoard()
+        : calibration_tl_(0.0f), calibration_tr_(0.0f), calibration_bl_(0.0f), calibration_br_(0.0f), BasicDevice() {}
 
     BalanceBoard::~BalanceBoard() {}
 
@@ -78,6 +78,7 @@ namespace wii {
         wiimote_t* wm = *device_;
         if (wm->exp.type != EXP_WII_BOARD) {
             wiiuse_disconnect(*device_);
+            return false;
         }
 
         wchar_t wstr[128];
@@ -101,15 +102,43 @@ namespace wii {
         is_on ? on_led() : off_led();
     }
 
-    double BalanceBoard::battery_percentage() {
+    float BalanceBoard::battery_percentage() {
         return (*device_)->battery_level;
     }
 
-    void BalanceBoard::update() {
+    float BalanceBoard::top_left() const noexcept {
+        wii_board_t* wb = (wii_board_t*)(&(*device_)->exp.wb);
+        return wb->tl + calibration_tl_;
+    }
+
+    float BalanceBoard::top_right() const noexcept {
+        wii_board_t* wb = (wii_board_t*)(&(*device_)->exp.wb);
+        return wb->tr + calibration_tr_;
+    }
+
+    float BalanceBoard::bottom_left() const noexcept {
+        wii_board_t* wb = (wii_board_t*)(&(*device_)->exp.wb);
+        return wb->bl + calibration_bl_;
+    }
+
+    float BalanceBoard::bottom_right() const noexcept {
+        wii_board_t* wb = (wii_board_t*)(&(*device_)->exp.wb);
+        return wb->br + calibration_br_;
+    }
+
+    void BalanceBoard::calibration() {
+        wii_board_t* wb = (wii_board_t*)(&(*device_)->exp.wb);
+        calibration_tl_ = -wb->tl;
+        calibration_tr_ = -wb->tr;
+        calibration_bl_ = -wb->bl;
+        calibration_br_ = -wb->br;
+    }
+
+    bool BalanceBoard::update() {
         Button::update();
 
         if (!wiiuse_poll(device_.get(), 1))
-            return ;
+            return false;
 
         wiimote_t* wm = *device_;
         if (IS_JUST_PRESSED(wm, WIIMOTE_BUTTON_A)) {
@@ -118,21 +147,7 @@ namespace wii {
             Button::release();
         }
 
-        printf("pressed  : %d\n", is_down());
-        printf("released : %d\n", is_up());
-        printf("just pr  : %d\n", is_pressed());
-        printf("just re  : %d\n", is_released());
-
-        if (wm->exp.type == EXP_WII_BOARD) {
-            /* wii balance board */
-            struct wii_board_t* wb = (wii_board_t*)&wm->exp.wb;
-            float total = wb->tl + wb->tr + wb->bl + wb->br;
-            float x = ((wb->tr + wb->br) / total) * 2 - 1;
-            float y = ((wb->tl + wb->tr) / total) * 2 - 1;
-            printf("Weight: %f kg @ (%f, %f)\n", total, x, y);
-            printf("Interpolated weight: TL:%f  TR:%f  BL:%f  BR:%f\n", wb->tl, wb->tr, wb->bl, wb->br);
-            printf("Raw: TL:%d  TR:%d  BL:%d  BR:%d\n", wb->rtl, wb->rtr, wb->rbl, wb->rbr);
-        }
+        return true;
     }
 
 }

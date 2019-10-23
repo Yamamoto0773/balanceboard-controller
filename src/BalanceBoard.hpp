@@ -120,18 +120,28 @@ namespace wii {
         void set_led(bool is_on);
 
         // between 0.0 and 1.0f
-        double battery_percentage();
+        float battery_percentage();
 
         const Button& front_button() const noexcept { return Button::self(); }
 
+        // get sensors value [kg]
         float top_left() const noexcept;
         float top_right() const noexcept;
         float bottom_left() const noexcept;
         float bottom_right() const noexcept;
 
-        void update();
+        // calibrated by software
+        // fix all sensors to zero value.
+        void calibration();
+
+        bool update();
 
     private:
         Button front_button_;
+
+        float calibration_tl_; // top left
+        float calibration_tr_; // top right
+        float calibration_bl_; // bottom left
+        float calibration_br_; // bottom right
     };
 }
