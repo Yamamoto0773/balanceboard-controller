@@ -13,6 +13,7 @@ bool BalanceBoardController::connect(const wii::SerialNumber<char>& serial_numbe
         BalanceBoard::connect(i);
         if (BalanceBoard::serial_number_ == serial_number) {
             BalanceBoard::on_led();
+            BalanceBoardController::calibration();
             return true;
         } else {
             BalanceBoard::disconnect();
@@ -64,4 +65,14 @@ double BalanceBoardController::time_from_last_update() {
     auto dur = now - last_update_time_;        // 要した時間を計算
     auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
     return msec / 1000.0;
+}
+
+
+bool BalanceBoardController::calibration() {
+    if (!update())
+        return false;
+
+    BalanceBoard::calibration();
+
+    return true;
 }

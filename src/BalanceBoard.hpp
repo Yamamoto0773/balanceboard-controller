@@ -50,6 +50,9 @@ namespace wii {
         ~SerialNumber() {};
 
         void parse(const string_type& serial_number_str) {
+            if (serial_number_str.size() != 6)
+                return ;
+
             for (size_t i = 0; i < 6; i++) {
                 auto str = serial_number_str.substr(i * 2, 2);
                 for (auto& ch : str) ch = std::tolower(ch);
@@ -135,6 +138,8 @@ namespace wii {
         void calibration();
 
         bool update();
+
+        const BalanceBoard& self() { return *this; };
 
     private:
         Button front_button_;

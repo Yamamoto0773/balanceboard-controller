@@ -55,6 +55,12 @@ public:
     //   最終更新からの時間 [秒] 1ms刻み
     double time_from_last_update();
 
+    // [summary]
+    //   キャリブレーションを行う
+    bool calibration();
+
+    const BalanceBoard& device() { return BalanceBoard::self(); }
+
 private:
     wii::Button tr_;
     wii::Button tl_;
