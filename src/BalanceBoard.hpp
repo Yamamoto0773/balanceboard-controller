@@ -123,7 +123,7 @@ namespace wii {
         void set_led(bool is_on);
 
         // between 0.0 and 1.0f
-        float battery_percentage();
+        float battery_level();
 
         const Button& front_button() const noexcept { return front_button_; }
 

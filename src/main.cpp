@@ -4,46 +4,41 @@
 #include <chrono>
 
 int main() {
-    BalanceBoardController controller;
+    AsyncBalanceBoardController controller;
 
-    std::cout << "connecting...\n";
-
-    while (!controller.is_connected()) {
-        controller.connect("001f322938df");
-        //_sleep(100);
-    }
-
-    // controller.set_threshold(0.5);
-
-    std::cout << "connected!\n";
-    std::cout << "battery:" << controller.battery_percentage() * 100 << "%\n";
-
-    // _sleep(1000);
+    controller.start_connect("001f322938df", 5);
+    
+    //controller.wait_connect();
 
     while (1) {
-        _sleep(10);
-        system("cls");
+        if (controller.is_connected()) {
+            controller.stop_connect();
 
+            std::cout << "battery:" << controller.battery_level() * 100 << "%\n";
 
-        std::cout << "lag:" << controller.time_from_last_update() << "\n";
+            if (controller.start_update()) {
+                std::cout << "update start\n";
+            }
 
-        controller.update();
+            controller.set_threshold(0.5);
 
+            //_sleep(10);
+            //system("cls");
 
-        std::cout << std::fixed;
-        std::cout << "tl :" << controller.top_left().down() << "\n";
-        std::cout << "tr :" << controller.top_right().down() << "\n";
-        std::cout << "bl :" << controller.bottom_left().down() << "\n";
-        std::cout << "br :" << controller.bottom_right().down() << "\n";
+            //std::cout << "lag:" << controller.time_from_last_update() << "\n";
 
-        const auto& device = controller.device();
+            std::cout << std::fixed;
+            std::cout << "tl :" << controller.top_left().pressed() << "\n";
+            //std::cout << "tr :" << controller.top_right().down() << "\n";
+            //std::cout << "bl :" << controller.bottom_left().down() << "\n";
+            //std::cout << "br :" << controller.bottom_right().down() << "\n";
+        } else {
+            std::cout << "connecting...\n";
+          
 
-        std::cout << std::fixed;
-        std::cout << "tl :" << device.top_left() << "\n";
-        std::cout << "tr :" << device.top_right() << "\n";
-        std::cout << "bl :" << device.bottom_left() << "\n";
-        std::cout << "br :" << device.bottom_right() << "\n";
-        
+            _sleep(3000);
+        }
+
     }
 
     controller.disconnect();

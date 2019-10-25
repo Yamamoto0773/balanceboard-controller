@@ -106,7 +106,7 @@ namespace wii {
         is_on ? on_led() : off_led();
     }
 
-    float BalanceBoard::battery_percentage() {
+    float BalanceBoard::battery_level() {
         return (*device_)->battery_level;
     }
 
