@@ -22,6 +22,7 @@ Koreisai2019 5J Project, miditone#, constructed by follwing repositories.
 - Connect Wii Balance Board with MAC Address (Serial Number)
 
 ## Requirements
+- Support only Windows
 - Need to link static library when build
 - Need to link dynamic library when execute
 
@@ -71,6 +72,12 @@ int main() {
 }
 
 ```
+
+## Library Changes
+This software uses wiiuse library (https://github.com/wiiuse/wiiuse) and modified to implement features.
+- Add method `wiiuse_serial_number` to get serial number via `struct wiimote_t`
+- Add method argument `index` to `wiiuse_find` in order to specify the index of device to be enumerated first.
+
 
 ## License
 This software is published under the **GNU General Public License v3.0** because of used library.  
